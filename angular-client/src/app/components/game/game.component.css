@@ -1,0 +1,23 @@
+h1,
+p {
+  text-align: center;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 150px 150px 150px;
+  justify-content: center;
+  align-content: center;
+  min-height: 80vh;
+}
+
+.wrapper {
+  border: 1px #000 solid;
+  height: 150px;
+  cursor: not-allowed;
+}
+
+.disable {
+  pointer-events: none;
+  opacity: 0.6;
+}

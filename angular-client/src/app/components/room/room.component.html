@@ -1,0 +1,9 @@
+<ng-container>
+  <section class="section-join">
+    <p>Enter Room ID to start game</p>
+    <form [formGroup]="roomForm" (ngSubmit)="onStartGame()">
+      <input placeholder="Room ID" type="text" formControlName="roomId" />
+      <button type="submit">Join</button>
+    </form>
+  </section>
+</ng-container>

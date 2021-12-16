@@ -1,0 +1,20 @@
+<ng-container *ngIf="gameState && gameState.isInRoom">
+  <h1>{{ title }}</h1>
+  <p *ngIf="!gameState.isGameStarted">Waiting for a player to join the game</p>
+
+  <main>
+    <ng-container *ngFor="let row of gameState.matrix; let i = index">
+      <ng-container *ngFor="let col of row; let j = index">
+        <div class="wrapper">
+          <app-square
+            [class.disable]="disableCell(gameState, i, j)"
+            [attr.data-row-index]="i"
+            [attr.data-col-index]="j"
+            (click)="updateMatrixBoard(i, j, gameState.playerSymbol)"
+            [symbol]="gameState.matrix[i][j]"
+          ></app-square>
+        </div>
+      </ng-container>
+    </ng-container>
+  </main>
+</ng-container>
