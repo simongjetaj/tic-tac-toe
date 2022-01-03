@@ -6,12 +6,12 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const csrf = require('csurf');
+const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+require('dotenv').config();
 
-import * as cors from 'cors';
 import { Request, Response, NextFunction } from 'express';
 import { HttpError } from 'http-errors';
-
 import 'reflect-metadata';
 
 const indexRouter = require('./routes/index');
@@ -33,17 +33,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB or API Gateway, Nginx, etc)
-// see https://expressjs.com/en/guide/behind-proxies.html
-// app.set('trust proxy', 1);
-
-const limiter = rateLimit({
-  windowMs: rateLimit.windowMs, // 15 minutes
-  max: rateLimit.max, // limit each IP to 100 requests per windowMs
-});
-
-//  apply to all requests
-app.use(limiter);
+// Apply the rate limiting middleware to all requests
+app.use(
+  rateLimit({
+    windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS), // 15 minutes
+    max: Number(process.env.RATE_LIMIT_MAX), // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  })
+);
 
 app.use('/', indexRouter);
 
@@ -58,9 +56,11 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json({
+    message: err.message,
+    error: err,
+  });
 });
 
 export default app;

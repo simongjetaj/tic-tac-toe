@@ -9,6 +9,10 @@ export interface IGameState {
   matrix: string[][];
 }
 
+export interface IConfig {
+  SERVER_BASE_URL: string;
+}
+
 export enum GameStatus {
   Won = 1,
   Draw = 0,

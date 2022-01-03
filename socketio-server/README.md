@@ -9,4 +9,4 @@ The server will listen in to `http://localhost:3000/`. And the app will automati
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.

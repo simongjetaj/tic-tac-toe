@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   angular-client:
-    image: tictactoe/angular
+    image: simongjetaj/angular:1.0.0
     container_name: angular-client-container
     build:
       network: host
@@ -12,22 +12,12 @@ services:
       - '4200:80'
     depends_on:
       - socketio-server
-    networks:
-      - angular-client
 
   socketio-server:
-    image: tictactoe/socketio
+    image: simongjetaj/socketio:1.0.0
     container_name: socketio-server-container
     build:
       context: .
       dockerfile: docker/images/node/Dockerfile
     ports:
       - '3000:3000'
-    networks:
-      - socketio-server
-
-networks:
-  angular-client:
-    driver: bridge
-  socketio-server:
-    driver: bridge

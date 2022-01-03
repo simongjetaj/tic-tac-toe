@@ -46,10 +46,9 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.socketService.connect();
     this.subscriptions.push(
       this.sharedStoreService.gameState$.subscribe(
-        (gameState) => (this.gameState = gameState)
+        (gameState: IGameState) => (this.gameState = gameState)
       )
     );
   }

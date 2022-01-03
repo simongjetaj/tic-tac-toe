@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +9,11 @@ export class SocketService {
 
   constructor() {}
 
-  public connect(): Promise<Socket> {
+  public connect(url: string): Promise<Socket> {
     return new Promise((resolve, reject) => {
-      this.socket = io(environment.serverBaseUrl);
+      this.socket = io(url, {
+        transports: ['websocket', 'polling'],
+      });
 
       if (!this.socket) return reject();
 

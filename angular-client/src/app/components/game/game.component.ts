@@ -64,7 +64,7 @@ export class GameComponent implements OnInit, OnDestroy {
             gameState.status === GameStatus.Won
               ? 'Losing provides wisdom!'
               : "It's a draw!";
-          this.toastrService.warning(message, '😉');
+          this.toastrService.warning(`${message} 😉`);
 
           setTimeout(() => {
             this.dialogRef = this.dialog.open(ConfirmationDialogComponent);
@@ -79,7 +79,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.socketService.socket,
         (gameState: IGameState) => {
           this.sharedStoreService.setGameSate(gameState as IGameState);
-          this.toastrService.success('Sei bravissimo, you won!', '😎');
+          this.toastrService.success('Sei bravissimo, you won! 😎');
         }
       );
 
@@ -87,7 +87,7 @@ export class GameComponent implements OnInit, OnDestroy {
         this.socketService.socket,
         (gameState: IGameState) => {
           this.sharedStoreService.setGameSate(gameState as IGameState);
-          this.toastrService.warning("It's a draw!", '😉');
+          this.toastrService.warning("It's a draw! 😉");
         }
       );
 
@@ -118,7 +118,7 @@ export class GameComponent implements OnInit, OnDestroy {
           this.sharedStoreService.setGameSate(gameState);
           this.router.navigate([''], {
             state: {
-              message: 'Leaving the game because one of you left the game',
+              message: 'Exiting the game because one of you left the game',
             },
           });
         }
