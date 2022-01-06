@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import * as http from 'http';
-import { IGameState } from './api/controllers/interfaces/game.interface';
+import { IGameState } from './shared/interfaces/game.interface';
 
 const controller = require('./api/controllers/main.controller');
 const roomController = require('./api/controllers/room.controller');

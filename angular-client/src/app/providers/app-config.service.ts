@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SocketService } from 'src/app/services/socket.service';
-import { IConfig } from 'src/app/interfaces/game.interface';
+import { IConfig } from 'shared/interfaces/game.interface';
 
 @Injectable({
   providedIn: 'root',

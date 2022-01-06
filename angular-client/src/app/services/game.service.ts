@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Socket } from 'socket.io-client';
-import { IGameState } from '../interfaces/game.interface';
+import { IGameState } from 'shared/interfaces/game.interface';
 
 @Injectable({
   providedIn: 'root',

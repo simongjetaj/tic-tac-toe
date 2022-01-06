@@ -9,6 +9,7 @@ COPY ./angular-client/package*.json /app
 RUN npm install
 
 COPY ./angular-client /app
+COPY ./socketio-server/src/shared /socketio-server/src/shared
 
 RUN npm run build
 

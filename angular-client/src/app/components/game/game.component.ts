@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { GameStatus, IGameState } from 'src/app/interfaces/game.interface';
+import { GameStatus, IGameState } from 'shared/interfaces/game.interface';
 import { GameService } from 'src/app/services/game.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { SharedStoreService } from 'src/app/store/shared-store.service';

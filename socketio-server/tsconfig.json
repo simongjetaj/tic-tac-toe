@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "noImplicitAny": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "dist",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@shared/*": ["src/shared/*"]
+    }
   }
 }

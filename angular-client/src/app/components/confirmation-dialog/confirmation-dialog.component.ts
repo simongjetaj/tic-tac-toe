@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { IGameState } from 'src/app/interfaces/game.interface';
+import { IGameState } from 'shared/interfaces/game.interface';
 import { GameService } from 'src/app/services/game.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { SharedStoreService } from 'src/app/store/shared-store.service';

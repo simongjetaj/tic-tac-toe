@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { IGameState } from './interfaces/game.interface';
+import { IGameState } from '../../shared/interfaces/game.interface';
 const utilities = require('./utils/shared');
 
 const joinRoom = async (io: Server, socket: Socket, gameState: IGameState) => {

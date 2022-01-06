@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { GameStatus, IGameState } from './interfaces/game.interface';
+import { GameStatus, IGameState } from '../../shared/interfaces/game.interface';
 const utilities = require('./utils/shared');
 
 const getSocketGameRoom = (socket: Socket): string => {
