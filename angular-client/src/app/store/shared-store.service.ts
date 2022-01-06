@@ -20,6 +20,7 @@ export class SharedStoreService {
       ['', '', ''],
       ['', '', ''],
     ],
+    history: [],
   };
 
   private gameState = new BehaviorSubject<IGameState>(this.initialState);

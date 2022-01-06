@@ -11,7 +11,7 @@ const getSocketGameRoom = (socket: Socket): string => {
 
 const restartGame = (socket: Socket, gameState: IGameState) => {
   const gameRoom = getSocketGameRoom(socket);
-  const sharedObj = {
+  const sharedGameState = {
     ...gameState,
     isInRoom: true,
     isGameStarted: true,
@@ -22,16 +22,17 @@ const restartGame = (socket: Socket, gameState: IGameState) => {
       ['', '', ''],
       ['', '', ''],
     ],
+    history: [],
   };
 
   const player1GameState = {
-    ...sharedObj,
+    ...sharedGameState,
     isPlayerTurn: false,
     playerSymbol: gameState.playerSymbol === 'x' ? 'x' : 'o',
   };
 
   const player2GameState = {
-    ...sharedObj,
+    ...sharedGameState,
     isPlayerTurn: true,
     playerSymbol: gameState.playerSymbol === 'x' ? 'o' : 'x',
   };
@@ -50,15 +51,49 @@ const requestGame = (socket: Socket, gameState: IGameState) => {
   socket.to(gameRoom).emit('game_requested', newGameState);
 };
 
-const leaveGame = (io: Server, socket: Socket, gameState: IGameState) => {
+const leaveGame = (
+  io: Server,
+  socket: Socket,
+  gameState: IGameState,
+  message: string = null
+) => {
+  const sharedGameState = {
+    ...gameState,
+    roomId: '',
+    isInRoom: false,
+    playerSymbol: 'x',
+    status: GameStatus.Unfinished,
+    isPlayerTurn: false,
+    isGameStarted: false,
+    isGameRequested: false,
+    isGameRestarted: false,
+    matrix: [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ],
+    history: [],
+  };
+
   const gameRoom = getSocketGameRoom(socket);
-  socket.emit('game_left', gameState);
-  socket.to(gameRoom).emit('game_left', gameState);
+  message = message ?? 'Exiting the game because one of you left the game';
+
+  socket.emit('game_left', sharedGameState, message);
+  socket.to(gameRoom).emit('game_left', sharedGameState, message);
 
   io.in(gameRoom).socketsLeave(gameRoom);
 };
 
-const updateGame = (socket: Socket, gameState: IGameState) => {
+const updateGame = (io: Server, socket: Socket, gameState: IGameState) => {
+  if (isGameHacked(gameState.history)) {
+    return leaveGame(
+      io,
+      socket,
+      gameState,
+      'Exiting the game because one of you is trying to hack the game'
+    );
+  }
+
   const gameRoom = getSocketGameRoom(socket);
   const result = isSolved(gameState.matrix);
   const isGameWon = result === 1 || result === 2;
@@ -125,10 +160,23 @@ const player = (symbol: 'x' | 'o') => ({
 const unfinished = (board: string[][]) =>
   board.some((row: string[]) => row.some((spot: string) => !spot));
 
+const isGameHacked = (history: string[]): boolean => {
+  for (let i = 0; i < history.length - 1; i++) {
+    const chars = history[i] + history[i + 1];
+
+    if (chars == 'xx' || chars == 'oo') {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 module.exports = {
   updateGame,
   requestGame,
   restartGame,
   leaveGame,
   isSolved,
+  isGameHacked,
 };

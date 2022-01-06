@@ -89,18 +89,18 @@ export class GameComponent implements OnInit, OnDestroy {
       this.gameService.onGameRequested(
         this.socketService.socket,
         (gameState: IGameState) => {
+          this.sharedStoreService.setGameSate(gameState);
+
           this.dialogRef = this.dialog.open(ConfirmationDialogComponent);
           this.dialogRef.componentInstance.confirmMessage =
             'The other player has requested a new game, would you like to play again?';
-          this.dialogRef.componentInstance.winnerMsg = true;
-
-          this.sharedStoreService.setGameSate(gameState);
         }
       );
 
       this.gameService.onGameRestarted(
         this.socketService.socket,
         (gameState: IGameState) => {
+          this.dialog.closeAll();
           this.sharedStoreService.setGameSate(gameState);
           this.toastrService.clear();
         }
@@ -108,12 +108,13 @@ export class GameComponent implements OnInit, OnDestroy {
 
       this.gameService.onGameLeft(
         this.socketService.socket,
-        (gameState: IGameState) => {
+        (gameState: IGameState, message: string) => {
+          this.dialog.closeAll();
           this.toastrService.clear();
           this.sharedStoreService.setGameSate(gameState);
           this.router.navigate([''], {
             state: {
-              message: 'Exiting the game because one of you left the game',
+              message,
             },
           });
         }
@@ -129,10 +130,10 @@ export class GameComponent implements OnInit, OnDestroy {
       ...this.gameState,
       matrix,
       playerSymbol: symbol,
+      history: [...this.gameState.history, symbol],
     };
 
-    this.gameState = newGameState;
-    this.gameService.updateGame(this.socketService.socket, this.gameState);
+    this.gameService.updateGame(this.socketService.socket, newGameState);
   }
 
   disableCell(gameState: IGameState, i: number, j: number) {

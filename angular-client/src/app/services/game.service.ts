@@ -63,7 +63,10 @@ export class GameService {
     socket.on('game_draw', (gameState) => cb(gameState));
   }
 
-  public onGameLeft(socket: Socket, cb: (gameState: IGameState) => void) {
-    socket.on('game_left', (gameState) => cb(gameState));
+  public onGameLeft(
+    socket: Socket,
+    cb: (gameState: IGameState, message: string) => void
+  ) {
+    socket.on('game_left', (gameState, message) => cb(gameState, message));
   }
 }

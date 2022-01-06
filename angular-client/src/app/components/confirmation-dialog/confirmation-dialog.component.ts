@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { IGameState } from 'shared/interfaces/game.interface';
 import { GameService } from 'src/app/services/game.service';
 import { SocketService } from 'src/app/services/socket.service';
@@ -10,11 +11,11 @@ import { SharedStoreService } from 'src/app/store/shared-store.service';
   templateUrl: './confirmation-dialog.component.html',
   styleUrls: ['./confirmation-dialog.component.css'],
 })
-export class ConfirmationDialogComponent implements OnInit {
+export class ConfirmationDialogComponent implements OnInit, OnDestroy {
   gameState: IGameState = {} as IGameState;
   confirmMessage: string = '';
   nonWinnerMsg: boolean = false;
-  winnerMsg: boolean = false;
+  subscriptions: Subscription[] = [];
 
   constructor(
     private gameService: GameService,
@@ -23,10 +24,16 @@ export class ConfirmationDialogComponent implements OnInit {
     private sharedStoreService: SharedStoreService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.sharedStoreService.gameState$.subscribe((gameState) => {
+        this.gameState = gameState;
+      })
+    );
+  }
 
   cancel() {
-    return this.gameService.leaveGame(
+    this.gameService.leaveGame(
       this.socketService.socket,
       this.sharedStoreService.initialState
     );
@@ -39,8 +46,14 @@ export class ConfirmationDialogComponent implements OnInit {
         this.gameState
       );
       this.toastrService.clear();
-    } else if (this.winnerMsg) {
+    } else {
       this.gameService.restartGame(this.socketService.socket, this.gameState);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription: Subscription) =>
+      subscription?.unsubscribe()
+    );
   }
 }

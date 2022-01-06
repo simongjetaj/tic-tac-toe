@@ -89,3 +89,35 @@ it('should test the main logic of tic tac toe game', () => {
     ])
   ).toEqual(0);
 });
+
+it('should test if the tic tac toe game is hacked', () => {
+  expect(
+    gameController.isGameHacked(['x', 'x', 'o', 'x', 'o', 'x', 'o', 'x', 'o'])
+  ).toEqual(true);
+
+  expect(
+    gameController.isGameHacked(['o', 'o', 'o', 'x', 'o', 'x', 'o', 'x', 'o'])
+  ).toEqual(true);
+
+  expect(
+    gameController.isGameHacked(['o', 'x', 'o', 'x', 'o', 'x', 'o', 'x', 'o'])
+  ).toEqual(false);
+
+  expect(
+    gameController.isGameHacked(['o', 'x', 'o', 'x', 'o', 'x', 'o', 'o', 'o'])
+  ).toEqual(true);
+
+  expect(
+    gameController.isGameHacked(['o', 'x', 'o', 'x', 'o', 'x', 'x', 'o', 'x'])
+  ).toEqual(true);
+
+  expect(
+    gameController.isGameHacked(['o', 'x', 'o', 'x', 'o', 'x', 'x', 'o', 'o'])
+  ).toEqual(true);
+
+  expect(gameController.isGameHacked([])).toEqual(false);
+
+  expect(gameController.isGameHacked(['x'])).toEqual(false);
+
+  expect(gameController.isGameHacked(['o'])).toEqual(false);
+});

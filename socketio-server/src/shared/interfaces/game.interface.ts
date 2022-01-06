@@ -8,6 +8,7 @@ export interface IGameState {
   isGameRequested: boolean;
   isGameRestarted: boolean;
   matrix: string[][];
+  history: string[];
 }
 
 export interface IConfig {

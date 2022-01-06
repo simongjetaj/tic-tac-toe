@@ -34,7 +34,7 @@ export default (httpServer: http.Server) => {
     });
 
     socket.on('update_game', (data: IGameState) => {
-      gameController.updateGame(socket, data);
+      gameController.updateGame(io, socket, data);
     });
   });
 
