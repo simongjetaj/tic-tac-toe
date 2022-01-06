@@ -1,4 +1,5 @@
 export interface IGameState {
+  roomId: string;
   isInRoom: boolean;
   playerSymbol: 'x' | 'o';
   status: GameStatus;

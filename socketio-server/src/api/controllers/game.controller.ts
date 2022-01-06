@@ -9,20 +9,6 @@ const getSocketGameRoom = (socket: Socket): string => {
   return gameRoom;
 };
 
-const finishGame = (socket: Socket, gameState: IGameState) => {
-  const gameRoom = getSocketGameRoom(socket);
-  if (gameState.status === GameStatus.Won) {
-    socket.emit('game_won', gameState);
-    socket.to(gameRoom).emit('game_lost', gameState);
-  } else if (gameState.status === GameStatus.Draw) {
-    socket.emit('game_draw', gameState);
-    socket.to(gameRoom).emit('game_lost', gameState);
-  } else {
-    socket.emit('game_updated', gameState);
-    socket.to(gameRoom).emit('game_updated', gameState);
-  }
-};
-
 const restartGame = (socket: Socket, gameState: IGameState) => {
   const gameRoom = getSocketGameRoom(socket);
   const sharedObj = {
@@ -74,25 +60,75 @@ const leaveGame = (io: Server, socket: Socket, gameState: IGameState) => {
 
 const updateGame = (socket: Socket, gameState: IGameState) => {
   const gameRoom = getSocketGameRoom(socket);
-  const player1GameState = {
-    ...gameState,
-    isPlayerTurn: false,
-    playerSymbol: gameState.playerSymbol === 'x' ? 'x' : 'o',
-  };
-  const player2GameState = {
-    ...gameState,
-    isPlayerTurn: true,
-    playerSymbol: gameState.playerSymbol === 'x' ? 'o' : 'x',
-  };
+  const result = isSolved(gameState.matrix);
+  const isGameWon = result === 1 || result === 2;
+  const isGameDraw = result === 0;
 
-  socket.emit('game_updated', player1GameState);
-  socket.to(gameRoom).emit('game_updated', player2GameState);
+  if (isGameWon) {
+    socket.emit('game_won', { ...gameState, status: GameStatus.Won });
+    socket
+      .to(gameRoom)
+      .emit('game_lost', { ...gameState, status: GameStatus.Won });
+  } else if (isGameDraw) {
+    socket.emit('game_draw', gameState);
+    socket.to(gameRoom).emit('game_lost', gameState);
+  } else {
+    const player1GameState = {
+      ...gameState,
+      isPlayerTurn: false,
+      playerSymbol: gameState.playerSymbol === 'x' ? 'x' : 'o',
+    };
+    const player2GameState = {
+      ...gameState,
+      isPlayerTurn: true,
+      playerSymbol: gameState.playerSymbol === 'x' ? 'o' : 'x',
+    };
+
+    socket.emit('game_updated', player1GameState);
+    socket.to(gameRoom).emit('game_updated', player2GameState);
+  }
 };
 
+const isSolved = (board: string[][]) => {
+  switch (true) {
+    case player('x').wins(board):
+      return 1;
+
+    case player('o').wins(board):
+      return 2;
+
+    case unfinished(board):
+      return -1;
+
+    default:
+      return 0;
+  }
+};
+
+const horizontal = (player: 'x' | 'o', board: string[][]) =>
+  board.some((row) => row.every((spot) => spot == player));
+
+const vertical = (player: 'x' | 'o', board: string[][]) =>
+  board.some((_, i) => board.every((row) => row[i] == player));
+
+const diagonals = (player: 'x' | 'o', board: string[][]) =>
+  board.every((row, i) => row[i] == player) ||
+  board.every((row, i) => row[3 - 1 - i] == player);
+
+const player = (symbol: 'x' | 'o') => ({
+  wins: (board: string[][]) =>
+    [horizontal, vertical, diagonals].some((full) => {
+      return full(symbol, board);
+    }),
+});
+
+const unfinished = (board: string[][]) =>
+  board.some((row: string[]) => row.some((spot: string) => !spot));
+
 module.exports = {
-  finishGame,
   updateGame,
   requestGame,
   restartGame,
   leaveGame,
+  isSolved,
 };

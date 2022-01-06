@@ -10,3 +10,7 @@ The server will listen in to `http://localhost:3000/`. And the app will automati
 ## Build
 
 Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Test
+
+Run `npm run test` to run the test cases.

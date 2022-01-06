@@ -17,12 +17,8 @@ export default (httpServer: http.Server) => {
   io.on('connection', (socket) => {
     controller.respond(socket);
 
-    socket.on('join_game', (roomId: string) => {
-      roomController.joinRoom(io, socket, roomId);
-    });
-
-    socket.on('finish_game', (data: IGameState) => {
-      gameController.finishGame(socket, data);
+    socket.on('join_game', (data: IGameState) => {
+      roomController.joinRoom(io, socket, data);
     });
 
     socket.on('restart_game', (data: IGameState) => {

@@ -8,20 +8,19 @@ import { IGameState } from '../interfaces/game.interface';
 export class GameService {
   constructor() {}
 
-  public async joinGameRoom(socket: Socket, roomId: string): Promise<boolean> {
+  public async joinGameRoom(
+    socket: Socket,
+    gameState: IGameState
+  ): Promise<IGameState> {
     return new Promise((resolve, reject) => {
-      socket.emit('join_game', roomId);
-      socket.on('room_joined', () => resolve(true));
+      socket.emit('join_game', gameState);
+      socket.on('room_joined', (gameState: IGameState) => resolve(gameState));
       socket.on('room_joined_error', ({ error }) => reject(error));
     });
   }
 
   public updateGame(socket: Socket, gameState: IGameState) {
     socket.emit('update_game', gameState);
-  }
-
-  public finishGame(socket: Socket, gameState: IGameState) {
-    socket.emit('finish_game', gameState);
   }
 
   public restartGame(socket: Socket, gameState: IGameState) {
@@ -40,7 +39,7 @@ export class GameService {
     socket.on('game_updated', (gameState) => cb(gameState));
   }
 
-  public onGameStarted(socket: Socket, cb: (startGame: boolean) => void) {
+  public onGameStarted(socket: Socket, cb: (gameState: IGameState) => void) {
     socket.on('game_started', (startGame) => cb(startGame));
   }
 

@@ -39,13 +39,8 @@ export class GameComponent implements OnInit, OnDestroy {
     if (this.socketService.socket) {
       this.gameService.onGameStarted(
         this.socketService.socket,
-        (startGame: boolean) => {
-          this.gameState = {
-            ...this.gameState,
-            isGameStarted: true,
-            isPlayerTurn: startGame,
-          };
-          this.sharedStoreService.setGameSate(this.gameState as IGameState);
+        (gameState: IGameState) => {
+          this.sharedStoreService.setGameSate(gameState);
         }
       );
 
@@ -129,9 +124,6 @@ export class GameComponent implements OnInit, OnDestroy {
   updateMatrixBoard(rowIndex: number, colIndex: number, symbol: 'x' | 'o') {
     const matrix = [...this.gameState.matrix];
     matrix[rowIndex][colIndex] = symbol;
-    const result = this.isSolved(matrix);
-    const isGameWon = result === 1 || result === 2;
-    const isGameDraw = result === 0;
 
     const newGameState = {
       ...this.gameState,
@@ -139,34 +131,9 @@ export class GameComponent implements OnInit, OnDestroy {
       playerSymbol: symbol,
     };
 
-    if (isGameWon || isGameDraw) {
-      this.gameState = {
-        ...newGameState,
-        status: isGameWon ? GameStatus.Won : GameStatus.Draw,
-      };
-
-      this.gameService.finishGame(this.socketService.socket, this.gameState);
-    } else {
-      this.gameState = newGameState;
-      this.gameService.updateGame(this.socketService.socket, this.gameState);
-    }
+    this.gameState = newGameState;
+    this.gameService.updateGame(this.socketService.socket, this.gameState);
   }
-
-  isSolved = (board: string[][]) => {
-    switch (true) {
-      case this.player('x').wins(board):
-        return 1;
-
-      case this.player('o').wins(board):
-        return 2;
-
-      case this.unfinished(board):
-        return -1;
-
-      default:
-        return 0;
-    }
-  };
 
   disableCell(gameState: IGameState, i: number, j: number) {
     const isWonAndNotRestarted =
@@ -179,26 +146,6 @@ export class GameComponent implements OnInit, OnDestroy {
       gameState.matrix[i][j] === 'o'
     );
   }
-
-  private horizontal = (player: 'x' | 'o', board: string[][]) =>
-    board.some((row) => row.every((spot) => spot == player));
-
-  private vertical = (player: 'x' | 'o', board: string[][]) =>
-    board.some((_, i) => board.every((row) => row[i] == player));
-
-  private diagonals = (player: 'x' | 'o', board: string[][]) =>
-    board.every((row, i) => row[i] == player) ||
-    board.every((row, i) => row[3 - 1 - i] == player);
-
-  private player = (symbol: 'x' | 'o') => ({
-    wins: (board: string[][]) =>
-      [this.horizontal, this.vertical, this.diagonals].some((full) => {
-        return full(symbol, board);
-      }),
-  });
-
-  private unfinished = (board: string[][]) =>
-    board.some((row: string[]) => row.some((spot: string) => !spot));
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription: Subscription) =>

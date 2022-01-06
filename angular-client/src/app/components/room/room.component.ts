@@ -55,22 +55,20 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   async onStartGame() {
     this.toastrService.clear();
-
     this.setJoining = true;
 
-    const joined = await this.gameService
-      .joinGameRoom(this.socketService.socket, this.roomForm.value.roomId)
+    const gameState = await this.gameService
+      .joinGameRoom(this.socketService.socket, {
+        ...this.sharedStoreService.initialState,
+        roomId: this.roomForm.value.roomId,
+      })
       .catch((err) => {
         alert(err);
       });
 
-    if (joined) {
-      this.gameState = {
-        ...this.gameState,
-        isInRoom: true,
-      };
+    if ((gameState as IGameState).isInRoom) {
       this.setJoining = false;
-      this.sharedStoreService.setGameSate(this.gameState as IGameState);
+      this.sharedStoreService.setGameSate(gameState as IGameState);
       this.router.navigate(['/game']);
     }
 

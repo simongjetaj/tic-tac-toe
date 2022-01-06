@@ -7,6 +7,7 @@ import { GameStatus, IGameState } from '../interfaces/game.interface';
 })
 export class SharedStoreService {
   public initialState: IGameState = {
+    roomId: '',
     isInRoom: false,
     playerSymbol: 'x',
     status: GameStatus.Unfinished,
